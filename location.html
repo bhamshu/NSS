@@ -1,0 +1,67 @@
+<!--If you want, use mylocation.net it's good-->
+<!DOCTYPE html>
+<html>
+
+
+<p>Click the button to get your coordinates.</p>
+
+<button onclick="getLocation()">Try It</button>
+
+<p id="demo"></p>
+
+<script>
+
+var x = document.getElementById("demo");
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else { 
+        x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+}
+
+function showPosition(position) {
+    accuracy = position.coords.accuracy;
+    lat = position.coords.latitude;
+    lon = position.coords.longitude;
+    
+    if(accuracy>2500){
+        very = " very ";
+        if(accuracy>5000)
+            very = "<i> very very </i>"
+        document.write("<h4>Accuracy is" +very+ "less. It is recommended that you visit this site from your mobile device.</h4><br>")
+    }
+    if(accuracy<6000){
+    document.write("latitude = <b>"+lat+"</b>, longitude = <b>"+lon+"</b>.<br>")}
+    else{
+        accuracy = "<b>"+accuracy+"</b>"
+    }
+    document.write("Accuracy = "+accuracy+" meters.")
+
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            x.innerHTML = "User denied the request for Geolocation."
+            break;
+        case error.POSITION_UNAVAILABLE:
+            x.innerHTML = "Location information is unavailable."
+            break;
+        case error.TIMEOUT:
+            x.innerHTML = "The request to get user location timed out."
+            break;
+        case error.UNKNOWN_ERROR:
+            x.innerHTML = "An unknown error occurred."
+            break;
+    }
+
+}
+
+
+
+</script>
+
+</body>
+</html>
