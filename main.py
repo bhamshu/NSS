@@ -2,7 +2,7 @@ projectdirpath = input("Enter project directory or simply press Enter if it's in
 
 csv_location = projectdirpath+'\\responses.csv'
 
-def main(target):
+def main(target, blood = None):
 	import csv
 	addresses = []
 	ids = []
@@ -34,20 +34,20 @@ def main(target):
 	f.write(str(d))
 	f.close()
 
-	i = 0
-	print("\n", ids[d[i][0]], coord_to_name[d[i][1]], d[i][2])
+	i = -1
 
-	sucsex = input()
-	while sucsex == "n" or sucsex == "N" or sucsex == None:
-		if sucsex==None:
-			sucsex = input("Please enter 'y' or 'n': ")
-			continue
+	sucsex = "n"
+	while sucsex == "n" or sucsex == "N":
 		i+=1
 		if i>=len(d):
 			print("\nSorry, out of volunteers :( ")
 			exit()
-		print("\n", ids[d[i][0]], coord_to_name[d[i][1]], d[i][2])
-		sucsex = input("Enter 'y' if request was fulfilled, or 'n' to continue: ")
+		if blood == None or ids[d[i][0]][3] in blood: 	
+			print("\n", ids[d[i][0]], coord_to_name[d[i][1]], d[i][2])
+			sucsex = ''
+			while not sucsex:
+				sucsex = input("Enter 'y' if request was fulfilled, or 'n' to continue: ")
+				
 	if sucsex[0]=="y" or sucsex[0]=="Y":
 		print("\nCongrats!")
 
@@ -90,5 +90,10 @@ def call_nearest(addresses, target):
 	return nearest(addlist, targ)
 
 if __name__=="__main__":
-	target = input("\nEnter exact metro station(eg. Vaishali) as it appears in 'metro coordinates.txt' or latitude, longitude(eg. 28.5681° N, 77.2058° E ) as returned by a google search(eg. on searching 'safdarjung hospital latitude longitude'): ").strip()
-	main(target)
+	target = ''
+	while not target:
+		target = input("\nEnter exact metro station(eg. Vaishali) as it appears in 'metro coordinates.txt' or latitude, longitude(eg. 28.5681° N, 77.2058° E ) as returned by a google search(eg. on searching 'safdarjung hospital latitude longitude'): ").strip()
+	blood = input("\nPlease enter space separated list of blood types you want(e.g. O+ B- A+) or simply press Enter if no preference: ").strip() or None
+	if blood!=None:
+		blood = blood.split()
+	main(target, blood)
