@@ -3,7 +3,7 @@
 # Blood Donation System
 
 **Step 1.**
-Visit tinyurl.com/bloodrecords and enter _username: demo_, _password: demo_ for a demo on a dummy database. Watch this [video](https://drive.google.com/open?id=17nIat-GgiB-2KqJq7hb5Du7DmvQGdH3P) for a complete walk through in a minute.
+Visit https://tinyurl.com/bloodrecordsdemo and enter _username: demo_, _password: demo_ for a demo on a dummy database. Watch this [video](https://drive.google.com/open?id=17nIat-GgiB-2KqJq7hb5Du7DmvQGdH3P) for a complete walk through in a minute.
 
 Alternatively, run main.py from the project directory. 
 
