@@ -1,99 +1,158 @@
-projectdirpath = input("Enter project directory or simply press Enter if it's in current directory: ") or '.'
+#SHOW MAP WITH HOSPITAL AND DIFFERENT DONORS
+from flask import Flask, render_template, request, redirect, url_for, session
+from passlib.hash import sha256_crypt
+import json
+from pyDes import triple_des
+from admin import thedecrypt #, paddedkey
+from auxiliaries import buildpage
+from records.main import main as rec
 
-csv_location = projectdirpath+'\\responses.csv'
+debug = False
 
-def main(target, blood = None):
-	import csv
-	addresses = []
-	ids = []
-	with open(csv_location) as csv_file:
-		csv_reader = csv.reader(csv_file, delimiter=',')
-		skipfirstcolumn = True
-		for row in csv_reader:
-			if skipfirstcolumn:
-				n_i   = row.index("Name")
-				c_i_1 = row.index("Contact Number")
-				c_i_2 = row.index("Alternate Contact Number")
-				b_i   = row.index("Blood Group")
-				m_i   = row.index('Nearest Metro Station to Home (Even if you chose "In / Around DTU Campus", choose the metro station nearest to your home if your home is in Delhi)')
-				skipfirstcolumn = False
-				continue
+if debug:
+	mydir = 'E:/Desktop/30/CV/NSS Blood/Computations/blood donation project/Web'
+else:
+	mydir = '/home/floorwell/nss_blood_operations'
 
-			addresses.append(row[m_i])
-			ids.append((row[n_i], row[c_i_1], row[c_i_2], row[b_i]))
+from os import urandom
+app = Flask(__name__)
 
+if debug:
+	app.secret_key = 'a_constant'
+else:
+	app.secret_key = urandom(24)
 
-	f = open(projectdirpath+"\\metro coordinates.txt")
-	f = f.read()
-	exec("name_to_coord="+f, locals(), globals())
-	coord_to_name = {v: k for k, v in name_to_coord.items()}
+@app.route('/')
+def my_form():
+	return render_template('home.html')
 
-	d = call_nearest(addresses, target)
-	
-	f = open(projectdirpath+"\\dump.txt", "w")
-	f.write(str(d))
-	f.close()
+@app.route('/', methods=['POST'])
+def my_form_post():
+	uname = request.form['uname']
+	session['uname'] = uname
+	pwrd = request.form['pwrd']
+	if(uname == 'demo'):	
+		return redirect(url_for('demo'))		
+	from admin import validatepwrd
+	bullion = validatepwrd(uname, pwrd)
+	if bullion=='1':
+		return render_template('failed.html', reason = 'invalid_username')
 
-	i = -1
+	if bullion==False:
+		return render_template('failed.html', reason = 'wrong_password')
+	# if bullion==True and uname=='admin':
+	# 	return admin()#redirect(url_for('admin'))
+	session['admin'] = False
+	if bullion==True:
+		print(f"{uname} Successfully logged in")
+		from admin import getclientsecret
+		client_secret = getclientsecret(uname, pwrd)
+		session['client_secret'] = client_secret
+		if uname=='admin':
+			return admin()
+		return render_template('logged_in.html', uname = uname)
 
-	sucsex = "n"
-	while sucsex == "n" or sucsex == "N":
-		i+=1
-		if i>=len(d):
-			print("\nSorry, out of volunteers :( ")
-			exit()
-		if blood == None or ids[d[i][0]][3] in blood: 	
-			print("\n", ids[d[i][0]], coord_to_name[d[i][1]], d[i][2])
-			sucsex = ''
-			while not sucsex:
-				sucsex = input("Enter 'y' if request was fulfilled, or 'n' to continue: ")
-				
-	if sucsex[0]=="y" or sucsex[0]=="Y":
-		print("\nCongrats!")
+@app.route('/demo')
+def demo():
+	return render_template('demo.html')
 
+@app.route('/dummyrecord', methods=['POST'])
+def showdummyrec():
+	loc = request.form['loc'].strip()
+	blood = request.form['blood'].strip() or None
+	d, ids, coord_to_name = rec(target=loc, blood = blood, projectdirpath = mydir+"/records")
+	pg = buildpage(d, ids, coord_to_name, blood)
+	return pg
 
-def call_nearest(addresses, target):
-	from algo import nearest
-	f = open(projectdirpath+"\metro coordinates.txt")
-	f = f.read()
-	exec("g="+f, locals(), globals())
-	
-	addlist = []
-	for i in range( len(addresses) ):
-		try:
-			addlist.append(g[addresses[i]+" Metro Station"])
-		except:
-			pass
-	from string import digits
-	if target[0] not in digits:
-		if " Metro Station" not in target:
-			target = target+" Metro Station"
-		if target not in g.keys():
-			print("\nYour input was considered as the name of a metro station but it didn't match any. Please make sure that the name is exactly correct. It is recommended that you use latitude, longitude. ")
-			exit()
-		targ = g[target]
-
-	else:
-		targ = target.replace("° N", "")
-		targ = targ.replace("° E", "")
-		targ = targ.split(",")
-		try:
-			targ[0], targ[1] = float(targ[0]), float(targ[1])
-		except:
-			print("\nAn exception occured during parsing lat, long. Please make sure the format is correct.")
-			exit()
-
-	if(targ[0]<28.4 or targ[0]>28.9 or targ[1]<76.8 or targ[1]>77.4):
-		print("\nNot in Delhi. Are you sure about the coordinates (lat, long)?")
-		exit()
-
-	return nearest(addlist, targ)
-
-if __name__=="__main__":
-	target = ''
-	while not target:
-		target = input("\nEnter exact metro station(eg. Vaishali) as it appears in 'metro coordinates.txt' or latitude, longitude(eg. 28.5681° N, 77.2058° E ) as returned by a google search(eg. on searching 'safdarjung hospital latitude longitude'): ").strip()
-	blood = input("\nPlease enter space separated list of blood types you want(e.g. O+ B- A+) or simply press Enter if no preference: ").strip() or None
+@app.route('/sortedrecords', methods = ['POST'])
+def showrecords():
+	client_secret = '"'+session['client_secret']+'"'
+	#print(client_secret)
+	loc = request.form['loc'].strip()
+	blood = request.form['blood'].strip() or None
 	if blood!=None:
 		blood = blood.split()
-	main(target, blood)
+	d, ids, coord_to_name = rec(target=loc, blood = blood, projectdirpath = mydir+"/records", client_secret= client_secret)
+	pg = buildpage(d, ids, coord_to_name, blood, num = 15)
+	return pg
+
+@app.route('/changepwrd', methods=['GET', 'POST'])
+def changepwrd():
+	from admin import changepassword
+	uname = session['uname']
+	existing_pwrd = request.form['existing_pwrd']
+	new_pwrd = request.form['new_pwrd']
+	confirm_new_pwrd = request.form['confirm_new_pwrd']
+	if(new_pwrd!=confirm_new_pwrd):
+		return render_template('failed.html', reason = 'Confirm New Password not same as New Password')
+	nnn=changepassword(uname, existing_pwrd, new_pwrd)
+	if nnn!=0:
+		return render_template('failed.html', reason = 'Some error occured. It\'s not your fault. Please contact admin')
+	return '''<h1>Password Successfully Changed. Please let chrome save the password or remember it carefully. 
+	There is no option of Forgot Password!</h1>'''
+
+
+def admin():
+	# uname = request.form['uname']
+	# pwrd = request.form['pwrd']
+	# if not (uname=='admin' and validatepwrd(uname, pwrd)):
+	# 	print("THAT WAS AN ATTACK")
+	# 	return "<h1>FRICK OFF</h1>"
+	# else:
+	# 	
+	session['admin'] = True
+	return render_template('logged_in.html', uname = 'admin')
+
+@app.route('/usermgmt', methods=['POST', 'GET'])
+def adddeluser():
+	if 'admin' not in session or not session['admin']:
+		print("THAT WAS SOME COOL ATTACK")
+		return "<h1>FRICK OFF</h1>"
+	if 'deluname' in request.form.keys():
+		deluname = request.form['deluname']
+		if deluname=='admin':
+			return f"<h1>Bwahahaha Nice ATTEMPT the admin cannot be deleted</h1>"
+		from admin import dropvolunteer
+		ret = dropvolunteer(deluname)
+		if(ret==0):
+			return f"<h1>Successfully Deleted {deluname}</h1>"
+		elif (ret==1):
+			return f"<h1>User Doesn't Exist</h1>"
+		elif (ret==-1):
+			return f"<h1>Sound the alarms! The data is inconsistent despite the best efforts by the benevolent admin :(</h1>"
+		return f"<h1>Excuse me, wtf?</h1>"
+
+	uname = request.form['uname']
+	pwrd = request.form['pwrd']
+	cls = request.files['client_secret'].read()
+	u2p = {}
+	with open(mydir+'/data/unametopwrd.json') as unametopwrd:
+		u2p = json.loads(unametopwrd.read())
+	if uname in u2p.keys():
+		return render_template('failed.html', reason = 'user_exists')	
+	from admin import addvolunteer
+	nn = addvolunteer(uname, pwrd, client_secret = cls)
+	if nn==0:
+		return f"<h1>User Successfully Added!</h1>"
+	else:
+		return f"<h1>Probably some error occured</h1>"
+
+@app.route('/allvolunteers')
+def showallvolunteers():
+	'''no args. shows all volunteers'''
+	if 'admin' not in session or not session['admin']:
+		print("THAT WAS A COOL ATTEMPT")
+		return f"403 Forbidden"
+	from admin import showallvolunteers as s_a_v
+	allvols = s_a_v()
+	return f"<h1>{allvols}</h1>"
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+	print("Error response code: 405", e)
+	return '''<h1>There is some error. Maybe you are logged out. Please <a href="/">log in</a></h1>'''
+
+
+
+if __name__ == "__main__":
+	app.run(debug = debug)

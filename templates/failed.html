@@ -1,0 +1,19 @@
+<!--link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"-->
+<link rel="stylesheet" type="text/css" href="../static/style.css">
+
+{% set copypasta = "Did you just attempt to break into my database, you little beach? I'll have you know I graduated top of my class in the Navy Seals, and I've been involved in numerous SURGICAL STRIKES on PAKISTAN, and I have over 300 confirmed kills. I am trained in gorilla warfare and I'm the top sniper in the entire RAW armed forces. You are nothing to me but just another target. I will wipe you the frick out with precision the likes of which has never been seen before on this Earth, mark my fricking words. You think you can get away with tyring that trick to my site over the Internet? Think again, loser. As we speak I am contacting my secret network of spies across the Nepal and Bangladesh and your IP is being traced right now so you better prepare for the storm, maggot. The storm that wipes out the pathetic little thing you call your life. You're just dead, kid. I can be anywhere, anytime, and I can kill you in over seven hundred ways, and that's just with my bare hands. Not only am I extensively trained in unarmed combat, but I have access to the entire arsenal of the Indian Army and I will use it to its full extent to wipe your miserable life off the face of the continent, you little piece of mischief. If only you could have known what unholy retribution your little clever intrusion was about to bring down upon you, maybe you would have held yourself. But you couldn't, you didn't, and now you're paying the price, you devil damn idiot. I will spit fury all over you and you will drown in it. You're fricking dead, kiddo." -%}
+
+{% if reason == 'invalid_username'%}
+	<title>Invalid Username</title>
+	<h1 align = 'center'>No User Found</h1>
+{% elif reason == 'wrong_password' %}
+	<title>Wrong Password</title>
+	<h2 align = 'center'>{{copypasta}}</h2>
+	<h1 align = 'center'>(Wrong Password)</h1>
+{% elif reason == 'user_exists' %}
+	<title>User Already Exists</title>
+	<h1 align = 'center'>The user already exists. Use terminal for updation etc</h1>
+{% else %}
+	<title>Something Bad has happened</title>
+	<h1 align = 'center'>{{reason}}</h1>
+{% endif %}

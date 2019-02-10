@@ -1,0 +1,43 @@
+<!--link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"-->
+<h2>Hello admin, you are successfully logged in!</h2>
+<link rel="stylesheet" type="text/css" href="../static/style.css">
+
+<div class="loggedin" >
+  <div class="form" >
+    <form class="login-form" method="POST" action="/sortedrecords" >
+      <input name="loc"  placeholder="Location"/>
+      <input name="blood"  placeholder="Blood Group"/>
+      <button>Submit</button>
+      <!--input type="submit"-->
+      <!--p class="message">Not registered? Contact administrator<a href="#">Create an account</a></p-->
+    </form>
+  </div>
+</div>
+
+<div class="loggedin">
+  <div class="form">
+  	<h3>Add New User</h3>
+    <form class="login-form" method="POST" enctype="multipart/form-data" >
+      <input name="uname"  placeholder="User Name"/>
+      <input name="pwrd"  placeholder="Password"/>
+      <input name="client_secret"  type = "file" placeholder="Choose Client Secret File" />
+      <button>Submit</button>
+      <!--input type="submit"-->
+      <!--p class="message">Not registered? Contact administrator<a href="#">Create an account</a></p-->
+    </form>
+  </div>
+</div>
+
+<div class="loggedin">
+  <div class="form">
+  	<h3>Delete User</h3>
+    <form class="login-form" method="POST" enctype="multipart/form-data" >
+      <input name="deluname"  placeholder="User Name"/>
+      <button>Submit</button>
+      <!--input type="submit"-->
+      <!--p class="message">Not registered? Contact administrator<a href="#">Create an account</a></p-->
+    </form>
+  </div>
+</div>
+
+<h2>See all users. Click <a href = "/allvolunteers" method = "GET">Here</a></h2>

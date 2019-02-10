@@ -1,0 +1,62 @@
+<!--link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"-->
+<h2>Hello {{uname}}, you are successfully logged in!</h2>
+<link rel="stylesheet" type="text/css" href="../static/style.css">
+
+<div class="loggedin">
+  <div class="form">
+  	<h3>Search Records</h3>
+    <form class="login-form" method="POST" action="/sortedrecords">
+      <input name="loc"  placeholder="Location"/>
+      <input name="blood"  placeholder="Blood Group"/>
+      <button>Submit</button>
+      <!--input type="submit"-->
+      <!--p class="message">Not registered? Contact administrator<a href="#">Create an account</a></p-->
+    </form>
+  </div>
+</div>
+
+<div class="loggedin">
+  <div class="form">
+  	<h3>Change Password</h3>
+    <form class="login-form" method="POST" action="/changepwrd">
+      <input name="existing_pwrd"  placeholder="Enter Current Password" type="password"/>
+      <input name="new_pwrd"  placeholder="Enter New Password" type = "password"/>
+      <input name="confirm_new_pwrd"  placeholder="Re-enter New Password" type = "password"/>
+      <button>Change Password</button>
+      <!--input type="submit"-->
+      <!--p class="message">Not registered? Contact administrator<a href="#">Create an account</a></p-->
+    </form>
+  </div>
+</div>
+
+
+
+{% if uname=='admin' %}
+<div class="loggedin">
+  <div class="form">
+  	<h3>Add New User</h3>
+    <form class="login-form" method="POST" enctype="multipart/form-data" action = "/usermgmt" >
+      <input name="uname"  placeholder="User Name"/>
+      <input name="pwrd"  placeholder="Password"/>
+      <input name="client_secret"  type = "file" placeholder="Choose Client Secret File" />
+      <button>Submit</button>
+      <!--input type="submit"-->
+      <!--p class="message">Not registered? Contact administrator<a href="#">Create an account</a></p-->
+    </form>
+  </div>
+</div>
+
+<div class="loggedin">
+  <div class="form">
+  	<h3>Delete User</h3>
+    <form class="login-form" method="POST" enctype="multipart/form-data" action = "/usermgmt" >
+      <input name="deluname"  placeholder="User Name"/>
+      <button>Submit</button>
+      <!--input type="submit"-->
+      <!--p class="message">Not registered? Contact administrator<a href="#">Create an account</a></p-->
+    </form>
+  </div>
+</div>
+
+<h2>See all users. Click <a href = "/allvolunteers" method = "GET">Here</a></h2>
+{% endif %}

@@ -1,0 +1,30 @@
+<!--link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}"-->
+ 
+<title>Demo</title>
+<h3 align = "left">0. Watch <a target="_blank" href = "https://drive.google.com/file/d/17nIat-GgiB-2KqJq7hb5Du7DmvQGdH3P/view">this one-minute video</a> to see how we work</h3>
+
+<h3 align = "left">1. Search for <a target="_blank" href = "https://www.google.com/search?q=aiims+coordinates">aiims coordinates</a> for Location field<br>28.5679° N, 77.2095° E</h3>
+
+<h3 align = "left">2. Enter a space separated list of blood groups<br>O+ O-</h3>
+
+<h2>Hello stranger, you are all set for a Demo!</h2>
+
+<link rel="stylesheet" type="text/css" href="../static/style.css">
+<body>
+<div class="loggedin">
+  <div class="form">
+    <form class="login-form" method="POST" action="/dummyrecord">
+      <input name="loc"  placeholder="Location"/>
+      <input name="blood"  placeholder="Blood Group"/>
+      <button>Submit</button>
+      <!--input type="submit"-->
+      <!--p class="message">Not registered? Contact administrator<a href="#">Create an account</a></p-->
+    </form>
+  </div>
+</div>
+</body>
+<script type="text/javascript">
+window.onload = function () {alert("Search google for \"Aiims coordinates\" and copy paste the results in the Location field.")}
+
+</script>
+

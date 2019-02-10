@@ -1,4 +1,0 @@
-#format it such that one can install by pip install requirements.txt
-flask
-passlib
-pyDes

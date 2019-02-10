@@ -90,8 +90,12 @@
 }
 .loggedin {
   width: 360px;
-  padding: 8% 0 0;
+  padding: 3% 0 0;
   margin: auto;
+}
+h2{
+  text-align: center;
+  margin:auto;
 }
 body {
   background: #76b852; /* fallback for old browsers */
