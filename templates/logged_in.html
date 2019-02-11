@@ -4,9 +4,21 @@
 
 <div class="loggedin">
   <div class="form">
+    <h3>Google Search for coordinates</h3>
+    <form class="login-form" method="POST" target = "_blank" action = "/googlesearch">
+      <input name="locname"  placeholder="Location Name"/>
+      <button>Search</button>
+      <!--input type="submit"-->
+      <!--p class="message">Not registered? Contact administrator<a href="#">Create an account</a></p-->
+    </form>
+  </div>
+</div>
+
+<div class="loggedin">
+  <div class="form">
   	<h3>Search Records</h3>
     <form class="login-form" method="POST" action="/sortedrecords">
-      <input name="loc"  placeholder="Location"/>
+      <input name="loc"  placeholder="Location Coordinates"/>
       <input name="blood"  placeholder="Blood Group"/>
       <button>Submit</button>
       <!--input type="submit"-->

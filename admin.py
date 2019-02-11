@@ -2,8 +2,9 @@ from passlib.hash import sha256_crypt
 from pyDes import triple_des
 import json
 
-u2pjson = 'data/unametopwrd.json'
-u2penckey = 'data/unametopwrdencryptedkey.json'
+mydir = '/home/floorwell/NSS'
+u2pjson = mydir+'/data/unametopwrd.json'
+u2penckey = mydir+'/data/unametopwrdencryptedkey.json'
 
 def initialise_records_donotdothisitwilldropallrecords():
 	pass
@@ -32,7 +33,7 @@ def addvolunteer(uname, pwrd, csloc = None, client_secret = None):
 			client_secret = cs.read()
 
 	elif type(client_secret)!=str:
-		client_secret = client_secret.decode('utf-8')	
+		client_secret = client_secret.decode('utf-8')
 	else:
 		client_secret = client_secret #lol
 
@@ -89,7 +90,7 @@ def dropvolunteer(uname):
 	returns 0 if successfully deleted
 	returns 1 if user doesn't exist
 	returns -1 if data inconsistency is detected (should never return this)
-	argument: uname 
+	argument: uname
 	'''
 	with open(u2pjson, 'r') as unametopwrd:
 		diccunametopwrd = json.loads(unametopwrd.read())
@@ -116,7 +117,7 @@ def validatepwrd(uname, pwrd):
 	'''
 	returns sha256_crypt.verify(uname+pwrd, expected_password)
 	where expected_password = u2p[uname]. the uname+pwrd is salted, hashed and stored
-	returns bool value. True if pwrd matches. False if it doesn't. 
+	returns bool value. True if pwrd matches. False if it doesn't.
 	returns '1' if uname doesn't exist
 	'''
 	with open(u2pjson, 'r') as unametopwrd:
@@ -147,7 +148,7 @@ def changepassword(uname, existingpwrd, newpwrd):
 	if bullion==False:
 		#Wrong password
 		return False
-	
+
 	client_secret = getclientsecret(uname, existingpwrd)
 
 	print('''Hello future visitor who came to read the logs. The upcoming user add is not really an addition but just me\
