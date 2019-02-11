@@ -23,6 +23,7 @@ app = Flask(__name__)
 if debug:
   app.secret_key = 'a_constant'
 else:
+  print("New instance of session cookie created.")
   app.secret_key = urandom(24)
 
 @app.route('/')
@@ -55,26 +56,29 @@ def my_form_post():
     if uname=='admin':
       session['admin']=True
     emergencymeasureses = {k:v for k, v in session.items()}
-    print("Here:", session)
+    #print("Here:", session)
     return render_template('logged_in.html', uname = uname)
 
 @app.route('/googlesearch', methods = ['POST'])
 def googlesearch():
-  print("emergencymeasureses", emergencymeasureses)
   locname = request.form['locname']
+  print(f"{emergencymeasureses['uname']} made a google search for {locname}")
   surl = f"https://www.google.com/search?q={locname}+coordinates"
   return redirect(surl)
 
 @app.route('/demo')
 def demo():
+  print("Demo page opened")
   return render_template('demo.html')
 
 @app.route('/dummyrecord', methods=['POST'])
 def showdummyrec():
   loc = request.form['loc'].strip()
   blood = request.form['blood'].strip() or None
+  print(f"Someone wants to access dummy records with loc = {loc} and blood={blood}")
   d, ids, coord_to_name = rec(target=loc, blood = blood, projectdirpath = mydir+"/records")
   pg = buildpage(d, ids, coord_to_name, blood)
+  print(f"Dummy records accessed successfully with loc = {loc} and blood={blood}")
   return pg
 
 @app.route('/sortedrecords', methods = ['GET','POST'])
@@ -82,16 +86,16 @@ def showrecords():
   #print("and here: ", session)
   if 'client_secret' not in session:
       print('CORRECT THIS SESSION THING')
-  print(f"{emergencymeasureses['client_secret']} wants to access records")
   client_secret = '"'+emergencymeasureses['client_secret']+'"'
   #print(client_secret)
   loc = request.form['loc'].strip()
   blood = request.form['blood'].strip() or None
+  print(f"{emergencymeasureses['uname']} wants to access records with loc={loc} and blood={blood}")
   if blood!=None:
     blood = blood.split()
   d, ids, coord_to_name = rec(target=loc, blood = blood, projectdirpath = mydir+"/records", client_secret= client_secret)
   pg = buildpage(d, ids, coord_to_name, blood, num = 15)
-  print(f"{emergencymeasureses['client_secret']} successfully accessed records")
+  print(f"{emergencymeasureses['uname']} successfully accessed records with loc={loc} and blood={blood}")
   return pg
 
 @app.route('/changepwrd', methods=['GET', 'POST'])
@@ -139,6 +143,7 @@ def adddeluser():
     from admin import dropvolunteer
     ret = dropvolunteer(deluname)
     if(ret==0):
+      print(f"admin deleted {deluname}")
       return f"<h1>Successfully Deleted {deluname}</h1>"
     elif (ret==1):
       return f"<h1>User Doesn't Exist</h1>"
@@ -157,8 +162,10 @@ def adddeluser():
   from admin import addvolunteer
   nn = addvolunteer(uname, pwrd, client_secret = cls)
   if nn==0:
+    print(f"admin added {uname}")
     return f"<h1>User Successfully Added!</h1>"
   else:
+    print("Error occured in adding user")
     return f"<h1>Probably some error occured</h1>"
 
 @app.route('/allvolunteers')
