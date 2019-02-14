@@ -1,4 +1,3 @@
-#FIX THE IMPORT THING IN CALL NEAREST:	lol looks like this is the most elegant way to do this. tis some ugliness in python
 def builddummycsv(csv_location):
 	import csv
 	addresses = []
@@ -34,7 +33,7 @@ def main(target, blood = None, projectdirpath = ".", client_secret = None):
 	coord_to_name = {v: k for k, v in name_to_coord.items()}
 
 	d = call_nearest(addresses, target, projectdirpath)
-	
+
 	f = open(projectdirpath+"/dump.txt", "w")
 	f.write(str(d))
 	f.close()
@@ -48,21 +47,21 @@ def showonterminalinterface(d, ids, coord_to_name):
 		if i>=len(d):
 			print("\nSorry, out of volunteers :( ")
 			exit()
-		if blood == None or ids[d[i][0]][3] in blood: 	
+		if blood == None or ids[d[i][0]][3] in blood:
 			print("\n", ids[d[i][0]], coord_to_name[d[i][1]], d[i][2])
 			sucsex = ''
 			while not sucsex:
 				sucsex = input("Enter 'y' if request was fulfilled, or 'n' to continue: ")
-				
+
 	if sucsex[0]=="y" or sucsex[0]=="Y":
 		print("\nCongrats!")
 
 
 def call_nearest(addresses, target,  projectdirpath = "."):
-	try:
-		from records.algo import nearest
-	except:
+	if __name__=='__main__':
 		from algo import nearest
+	else:
+		from records.algo import nearest
 	g = get_metro_coordinates_txt(projectdirpath)
 	addlist = []
 	for i in range( len(addresses) ):
